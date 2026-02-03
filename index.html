@@ -200,12 +200,112 @@
         .gif-container {
             margin-bottom: 30px;
             animation: bounceIn 1s ease-out;
+            position: relative;
         }
 
         .gif-container img {
             max-width: 300px;
             border-radius: 15px;
             box-shadow: 0 0 30px rgba(255, 105, 180, 0.5);
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Glass effect overlay */
+        .glass-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            border-radius: 15px;
+            background: linear-gradient(
+                135deg,
+                rgba(255, 255, 255, 0.1) 0%,
+                rgba(255, 255, 255, 0.05) 50%,
+                rgba(255, 255, 255, 0.1) 100%
+            );
+            z-index: 2;
+            pointer-events: none;
+            overflow: hidden;
+        }
+
+        /* Glass reflection streak */
+        .glass-overlay::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(
+                45deg,
+                transparent 40%,
+                rgba(255, 255, 255, 0.3) 45%,
+                rgba(255, 255, 255, 0.5) 50%,
+                rgba(255, 255, 255, 0.3) 55%,
+                transparent 60%
+            );
+            animation: glassShine 4s ease-in-out infinite;
+        }
+
+        /* Subtle condensation/fog spots */
+        .glass-overlay::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background:
+                radial-gradient(ellipse at 20% 80%, rgba(255,255,255,0.15) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 20%, rgba(255,255,255,0.1) 0%, transparent 40%),
+                radial-gradient(ellipse at 50% 50%, rgba(255,255,255,0.05) 0%, transparent 60%);
+            border-radius: 15px;
+        }
+
+        @keyframes glassShine {
+            0%, 100% {
+                transform: translateX(-100%) rotate(45deg);
+            }
+            50% {
+                transform: translateX(100%) rotate(45deg);
+            }
+        }
+
+        /* Glass border/frame effect */
+        .glass-frame {
+            position: absolute;
+            top: -5px;
+            left: -5px;
+            right: -5px;
+            bottom: -5px;
+            border: 3px solid rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            box-shadow:
+                inset 0 0 20px rgba(255, 255, 255, 0.1),
+                0 0 20px rgba(255, 105, 180, 0.3);
+            z-index: 3;
+            pointer-events: none;
+        }
+
+        /* Kiss mark on glass */
+        .kiss-mark {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 80px;
+            z-index: 4;
+            opacity: 0;
+            animation: kissAppear 3s ease-in-out infinite;
+            filter: drop-shadow(0 0 10px rgba(255, 105, 180, 0.8));
+            pointer-events: none;
+        }
+
+        @keyframes kissAppear {
+            0%, 70%, 100% { opacity: 0; transform: translate(-50%, -50%) scale(0.5); }
+            80%, 90% { opacity: 0.8; transform: translate(-50%, -50%) scale(1); }
         }
 
         @keyframes bounceIn {
@@ -434,7 +534,10 @@
     <div class="card-content" id="cardContent">
         <div class="main-content" id="mainContent">
             <div class="gif-container">
-                <img src="https://media.giphy.com/media/l0HlMG1EX3FeqyLpC/giphy.gif" alt="Dramatic Love">
+                <img src="https://media1.giphy.com/media/v1.Y2lkPTc5MGI3NjExbWozdWthYTBoeDBmeGFoNXZqNDBpeHl5NmxmNWs1MHo4azRpbWVneCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/jmSeRCHCxfPvq/giphy.gif" alt="Kissing through glass">
+                <div class="glass-overlay"></div>
+                <div class="glass-frame"></div>
+                <div class="kiss-mark">💋</div>
             </div>
 
             <div class="question">
