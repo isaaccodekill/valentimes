@@ -24,6 +24,179 @@
             position: relative;
         }
 
+        /* ===== ENVELOPE STYLES ===== */
+        .envelope-container {
+            perspective: 1000px;
+            width: 320px;
+            height: 220px;
+            cursor: pointer;
+            position: relative;
+            z-index: 100;
+        }
+
+        .envelope-container.opened {
+            pointer-events: none;
+        }
+
+        .envelope {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.5s ease;
+        }
+
+        .envelope-container:hover .envelope {
+            transform: translateY(-10px);
+        }
+
+        .envelope-container.opened .envelope {
+            transform: translateY(-10px);
+        }
+
+        /* Envelope body */
+        .envelope-body {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(145deg, #f5e6d3, #e8d4c0);
+            border-radius: 10px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4),
+                        inset 0 -5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Envelope back flap (the one that opens) */
+        .envelope-flap {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 110px;
+            background: linear-gradient(180deg, #e8d4c0, #dcc7b0);
+            transform-origin: top center;
+            transform: rotateX(0deg);
+            transition: transform 1s ease;
+            z-index: 10;
+            clip-path: polygon(0 0, 50% 100%, 100% 0);
+        }
+
+        .envelope-flap::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(180deg, rgba(255,255,255,0.3), transparent);
+            clip-path: polygon(0 0, 50% 100%, 100% 0);
+        }
+
+        .envelope-container.opened .envelope-flap {
+            transform: rotateX(180deg);
+        }
+
+        /* Heart seal */
+        .envelope-seal {
+            position: absolute;
+            top: 60px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #ff6b9d, #ff2d7a);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            box-shadow: 0 4px 15px rgba(255, 45, 122, 0.5);
+            z-index: 20;
+            transition: transform 0.5s ease 0.3s, opacity 0.3s ease 0.5s;
+        }
+
+        .envelope-container.opened .envelope-seal {
+            transform: translateX(-50%) scale(0);
+            opacity: 0;
+        }
+
+        /* Inner envelope (darker part visible when open) */
+        .envelope-inner {
+            position: absolute;
+            top: 5px;
+            left: 5px;
+            right: 5px;
+            height: 100px;
+            background: linear-gradient(180deg, #c9a987, #b8956f);
+            clip-path: polygon(0 0, 50% 80%, 100% 0, 100% 100%, 0 100%);
+            z-index: 1;
+        }
+
+        /* The card inside */
+        .card-inside {
+            position: absolute;
+            top: 20px;
+            left: 15px;
+            right: 15px;
+            bottom: 15px;
+            background: linear-gradient(135deg, #fff5f8, #ffe4ec);
+            border-radius: 8px;
+            z-index: 5;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            color: #ff69b4;
+            text-align: center;
+            padding: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            transition: transform 1s ease 0.5s, opacity 0.5s ease 0.5s;
+            transform: translateY(0);
+        }
+
+        .envelope-container.opened .card-inside {
+            transform: translateY(-250px) scale(1.2);
+            opacity: 0;
+        }
+
+        /* Click hint */
+        .click-hint {
+            position: absolute;
+            bottom: -50px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: #ff9ecb;
+            font-size: 1rem;
+            animation: pulse 2s infinite;
+            white-space: nowrap;
+        }
+
+        .envelope-container.opened .click-hint {
+            display: none;
+        }
+
+        /* ===== CARD CONTENT (revealed after envelope opens) ===== */
+        .card-content {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.8s ease, visibility 0s linear 0.8s;
+            z-index: 50;
+        }
+
+        .card-content.visible {
+            opacity: 1;
+            visibility: visible;
+            transition: opacity 0.8s ease 0.8s, visibility 0s linear 0s;
+        }
+
         .gif-container {
             margin-bottom: 30px;
             animation: bounceIn 1s ease-out;
@@ -113,6 +286,7 @@
             position: absolute;
             box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
             transition: transform 0.1s, left 0.3s, top 0.3s, font-size 0.3s, padding 0.3s;
+            z-index: 60;
         }
 
         .victory-screen {
@@ -120,6 +294,13 @@
             flex-direction: column;
             align-items: center;
             animation: fadeIn 1s ease-out;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            justify-content: center;
+            z-index: 200;
         }
 
         .victory-screen.visible {
@@ -186,25 +367,87 @@
         .main-content.hidden {
             display: none;
         }
+
+        /* Envelope float animation */
+        @keyframes envelopeFloat {
+            0%, 100% { transform: translateY(0) rotate(-1deg); }
+            50% { transform: translateY(-15px) rotate(1deg); }
+        }
+
+        .envelope-container:not(.opened) {
+            animation: envelopeFloat 3s ease-in-out infinite;
+        }
+
+        /* Sparkle effect around envelope */
+        .sparkle {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background: #fff;
+            border-radius: 50%;
+            opacity: 0;
+            animation: sparkle 2s infinite;
+        }
+
+        @keyframes sparkle {
+            0%, 100% { opacity: 0; transform: scale(0); }
+            50% { opacity: 1; transform: scale(1); }
+        }
+
+        .envelope-wrapper {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .envelope-wrapper.hidden {
+            display: none;
+        }
     </style>
 </head>
 <body>
     <div class="hearts" id="hearts"></div>
 
-    <div class="main-content" id="mainContent">
-        <div class="gif-container">
-            <img src="https://media.giphy.com/media/l0HlMG1EX3FeqyLpC/giphy.gif" alt="Dramatic Love">
-        </div>
+    <!-- Envelope that opens -->
+    <div class="envelope-wrapper" id="envelopeWrapper">
+        <div class="envelope-container" id="envelopeContainer" onclick="openEnvelope()">
+            <div class="envelope">
+                <div class="envelope-body"></div>
+                <div class="envelope-inner"></div>
+                <div class="card-inside">Something special awaits... 💕</div>
+                <div class="envelope-flap"></div>
+                <div class="envelope-seal">💌</div>
+            </div>
+            <div class="click-hint">Click to open!</div>
 
-        <div class="question">
-            <span id="typewriter"></span><span class="cursor" id="cursor"></span>
+            <!-- Sparkles -->
+            <div class="sparkle" style="top: -20px; left: 20px; animation-delay: 0s;"></div>
+            <div class="sparkle" style="top: 50px; left: -30px; animation-delay: 0.5s;"></div>
+            <div class="sparkle" style="top: -10px; right: 10px; animation-delay: 1s;"></div>
+            <div class="sparkle" style="bottom: 30px; right: -20px; animation-delay: 1.5s;"></div>
+            <div class="sparkle" style="bottom: -10px; left: 50px; animation-delay: 0.3s;"></div>
         </div>
-
-        <div class="buttons" id="buttons">
-            <button class="btn btn-yes" onclick="sayYes()">YES 💕</button>
-        </div>
-        <button class="btn btn-no" id="noBtn" onmouseover="dodgeButton()">No</button>
     </div>
+
+    <!-- Card content (revealed after envelope opens) -->
+    <div class="card-content" id="cardContent">
+        <div class="main-content" id="mainContent">
+            <div class="gif-container">
+                <img src="https://media.giphy.com/media/l0HlMG1EX3FeqyLpC/giphy.gif" alt="Dramatic Love">
+            </div>
+
+            <div class="question">
+                <span id="typewriter"></span><span class="cursor" id="cursor"></span>
+            </div>
+
+            <div class="buttons" id="buttons">
+                <button class="btn btn-yes" onclick="sayYes()">YES 💕</button>
+            </div>
+        </div>
+    </div>
+
+    <button class="btn btn-no" id="noBtn" onmouseover="dodgeButton()">No</button>
 
     <div class="victory-screen" id="victoryScreen">
         <div class="victory-text">YAAAY! 🎉💕🎉</div>
@@ -219,10 +462,14 @@
         const noBtn = document.getElementById('noBtn');
         const mainContent = document.getElementById('mainContent');
         const victoryScreen = document.getElementById('victoryScreen');
+        const envelopeContainer = document.getElementById('envelopeContainer');
+        const envelopeWrapper = document.getElementById('envelopeWrapper');
+        const cardContent = document.getElementById('cardContent');
 
         let charIndex = 0;
         let noButtonScale = 1;
         let dodgeCount = 0;
+        let envelopeOpened = false;
 
         // Create floating hearts background
         function createHearts() {
@@ -239,6 +486,25 @@
 
                 setTimeout(() => heart.remove(), 6000);
             }, 300);
+        }
+
+        // Open envelope animation
+        function openEnvelope() {
+            if (envelopeOpened) return;
+            envelopeOpened = true;
+
+            envelopeContainer.classList.add('opened');
+
+            // After envelope opens, show the card content
+            setTimeout(() => {
+                envelopeWrapper.classList.add('hidden');
+                cardContent.classList.add('visible');
+                noBtn.style.opacity = '0';
+                noBtn.style.display = 'block';
+
+                // Start typewriter after a short delay
+                setTimeout(typeWriter, 500);
+            }, 1500);
         }
 
         // Typewriter effect
@@ -260,7 +526,6 @@
 
         // Position the No button initially
         function positionNoButton() {
-            const btnRect = noBtn.getBoundingClientRect();
             noBtn.style.left = (window.innerWidth / 2 + 80) + 'px';
             noBtn.style.top = (window.innerHeight / 2 + 100) + 'px';
         }
@@ -331,16 +596,15 @@
 
             // Transition to victory screen
             setTimeout(() => {
-                mainContent.classList.add('hidden');
+                cardContent.classList.remove('visible');
                 noBtn.style.display = 'none';
                 victoryScreen.classList.add('visible');
             }, 1500);
         }
 
         // Initialize
-        noBtn.style.opacity = '0';
+        noBtn.style.display = 'none';
         createHearts();
-        setTimeout(typeWriter, 1000);
     </script>
 </body>
 </html>
