@@ -469,10 +469,53 @@
             height: 100%;
             justify-content: center;
             z-index: 200;
+            overflow: hidden;
         }
 
         .victory-screen.visible {
             display: flex;
+        }
+
+        /* Scrolling lyrics background */
+        .lyrics-scroll {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        .lyrics-line {
+            position: absolute;
+            white-space: nowrap;
+            font-size: 1.8rem;
+            color: rgba(255, 105, 180, 0.15);
+            font-style: italic;
+            text-shadow: 0 0 10px rgba(255, 105, 180, 0.1);
+            animation: scrollLyrics 20s linear infinite;
+        }
+
+        .lyrics-line:nth-child(1) { top: 5%; animation-delay: 0s; }
+        .lyrics-line:nth-child(2) { top: 15%; animation-delay: -3s; }
+        .lyrics-line:nth-child(3) { top: 25%; animation-delay: -6s; }
+        .lyrics-line:nth-child(4) { top: 35%; animation-delay: -9s; }
+        .lyrics-line:nth-child(5) { top: 45%; animation-delay: -12s; }
+        .lyrics-line:nth-child(6) { top: 55%; animation-delay: -15s; }
+        .lyrics-line:nth-child(7) { top: 65%; animation-delay: -18s; }
+        .lyrics-line:nth-child(8) { top: 75%; animation-delay: -2s; }
+        .lyrics-line:nth-child(9) { top: 85%; animation-delay: -5s; }
+        .lyrics-line:nth-child(10) { top: 95%; animation-delay: -8s; }
+
+        @keyframes scrollLyrics {
+            0% {
+                transform: translateX(100vw);
+            }
+            100% {
+                transform: translateX(-100%);
+            }
         }
 
         @keyframes fadeIn {
@@ -626,6 +669,18 @@
     <button class="btn btn-no" id="noBtn" onmouseover="dodgeButton()">No</button>
 
     <div class="victory-screen" id="victoryScreen">
+        <div class="lyrics-scroll">
+            <div class="lyrics-line">Cos I'm addicted to you Baby 💕</div>
+            <div class="lyrics-line">Take me in I'll be your vitamin ✨</div>
+            <div class="lyrics-line">Come sit by me oh my darling 💗</div>
+            <div class="lyrics-line">Put your touches all over me 💖</div>
+            <div class="lyrics-line">Let me cater to you 💘</div>
+            <div class="lyrics-line">Cos I'm addicted to you Baby 💕</div>
+            <div class="lyrics-line">Take me in I'll be your vitamin ✨</div>
+            <div class="lyrics-line">Vitamin gimme vitamin 💗</div>
+            <div class="lyrics-line">Girl I go need your vitamin 💖</div>
+            <div class="lyrics-line">I'm addicted to you 💘</div>
+        </div>
         <div class="victory-text">YAAAY! 🎉💕🎉</div>
         <div class="kiss-message">Now kiss the sender <span id="kissCounter" style="color: #FFD700; font-weight: bold;">1</span> times 💋</div>
     </div>
