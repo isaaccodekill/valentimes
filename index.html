@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>A Very Important Question</title>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #1a0a1a 0%, #2d1f3d 50%, #1a0a2e 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Comic Sans MS', 'Chalkboard', cursive;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .gif-container {
+            margin-bottom: 30px;
+            animation: bounceIn 1s ease-out;
+        }
+
+        .gif-container img {
+            max-width: 300px;
+            border-radius: 15px;
+            box-shadow: 0 0 30px rgba(255, 105, 180, 0.5);
+        }
+
+        @keyframes bounceIn {
+            0% {
+                transform: scale(0) rotate(-10deg);
+                opacity: 0;
+            }
+            50% {
+                transform: scale(1.2) rotate(5deg);
+            }
+            100% {
+                transform: scale(1) rotate(0deg);
+                opacity: 1;
+            }
+        }
+
+        .question {
+            font-size: 2.5rem;
+            color: #ff69b4;
+            text-shadow: 0 0 20px rgba(255, 105, 180, 0.8),
+                         0 0 40px rgba(255, 105, 180, 0.4);
+            margin-bottom: 40px;
+            text-align: center;
+            padding: 0 20px;
+        }
+
+        .cursor {
+            display: inline-block;
+            width: 3px;
+            height: 1em;
+            background-color: #ff69b4;
+            margin-left: 5px;
+            animation: blink 0.7s infinite;
+            vertical-align: text-bottom;
+        }
+
+        @keyframes blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0; }
+        }
+
+        .buttons {
+            display: flex;
+            gap: 30px;
+            opacity: 0;
+            transition: opacity 0.5s ease-in;
+        }
+
+        .buttons.visible {
+            opacity: 1;
+        }
+
+        .btn {
+            padding: 20px 50px;
+            font-size: 1.5rem;
+            font-family: inherit;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .btn-yes {
+            background: linear-gradient(135deg, #ff6b9d, #ff2d7a);
+            color: white;
+            box-shadow: 0 0 20px rgba(255, 45, 122, 0.5);
+        }
+
+        .btn-yes:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 40px rgba(255, 45, 122, 0.8);
+        }
+
+        .btn-no {
+            background: linear-gradient(135deg, #666, #444);
+            color: white;
+            position: absolute;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+            transition: transform 0.1s, left 0.3s, top 0.3s, font-size 0.3s, padding 0.3s;
+        }
+
+        .victory-screen {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            animation: fadeIn 1s ease-out;
+        }
+
+        .victory-screen.visible {
+            display: flex;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.8); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        .victory-text {
+            font-size: 3rem;
+            color: #ff69b4;
+            text-shadow: 0 0 30px rgba(255, 105, 180, 0.8);
+            animation: pulse 1.5s infinite;
+        }
+
+        .kiss-message {
+            font-size: 2rem;
+            color: #ff9ecb;
+            margin-top: 30px;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .hearts {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            overflow: hidden;
+            z-index: -1;
+        }
+
+        .heart {
+            position: absolute;
+            font-size: 20px;
+            animation: float 4s ease-in infinite;
+            opacity: 0.6;
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(100vh) rotate(0deg);
+                opacity: 0.6;
+            }
+            100% {
+                transform: translateY(-100px) rotate(720deg);
+                opacity: 0;
+            }
+        }
+
+        .main-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .main-content.hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="hearts" id="hearts"></div>
+
+    <div class="main-content" id="mainContent">
+        <div class="gif-container">
+            <img src="https://media.giphy.com/media/l0HlMG1EX3FeqyLpC/giphy.gif" alt="Dramatic Love">
+        </div>
+
+        <div class="question">
+            <span id="typewriter"></span><span class="cursor" id="cursor"></span>
+        </div>
+
+        <div class="buttons" id="buttons">
+            <button class="btn btn-yes" onclick="sayYes()">YES 💕</button>
+        </div>
+        <button class="btn btn-no" id="noBtn" onmouseover="dodgeButton()">No</button>
+    </div>
+
+    <div class="victory-screen" id="victoryScreen">
+        <div class="victory-text">YAAAY! 🎉💕🎉</div>
+        <div class="kiss-message">Now kiss the sender 💋</div>
+    </div>
+
+    <script>
+        const text = "Egovinwa, will you be my Valentimes? 💕";
+        const typewriter = document.getElementById('typewriter');
+        const cursor = document.getElementById('cursor');
+        const buttons = document.getElementById('buttons');
+        const noBtn = document.getElementById('noBtn');
+        const mainContent = document.getElementById('mainContent');
+        const victoryScreen = document.getElementById('victoryScreen');
+
+        let charIndex = 0;
+        let noButtonScale = 1;
+        let dodgeCount = 0;
+
+        // Create floating hearts background
+        function createHearts() {
+            const heartsContainer = document.getElementById('hearts');
+            const heartEmojis = ['💕', '💗', '💖', '💘', '❤️', '💝'];
+
+            setInterval(() => {
+                const heart = document.createElement('div');
+                heart.className = 'heart';
+                heart.textContent = heartEmojis[Math.floor(Math.random() * heartEmojis.length)];
+                heart.style.left = Math.random() * 100 + 'vw';
+                heart.style.animationDuration = (3 + Math.random() * 3) + 's';
+                heartsContainer.appendChild(heart);
+
+                setTimeout(() => heart.remove(), 6000);
+            }, 300);
+        }
+
+        // Typewriter effect
+        function typeWriter() {
+            if (charIndex < text.length) {
+                typewriter.textContent += text.charAt(charIndex);
+                charIndex++;
+                setTimeout(typeWriter, 80);
+            } else {
+                // Hide cursor and show buttons after typing is done
+                setTimeout(() => {
+                    cursor.style.display = 'none';
+                    buttons.classList.add('visible');
+                    noBtn.style.opacity = '1';
+                    positionNoButton();
+                }, 500);
+            }
+        }
+
+        // Position the No button initially
+        function positionNoButton() {
+            const btnRect = noBtn.getBoundingClientRect();
+            noBtn.style.left = (window.innerWidth / 2 + 80) + 'px';
+            noBtn.style.top = (window.innerHeight / 2 + 100) + 'px';
+        }
+
+        // Make the No button dodge and shrink
+        function dodgeButton() {
+            dodgeCount++;
+            noButtonScale *= 0.75;
+
+            // Calculate new random position away from current position
+            const maxX = window.innerWidth - 150;
+            const maxY = window.innerHeight - 80;
+
+            let newX = Math.random() * maxX;
+            let newY = Math.random() * maxY;
+
+            // Make sure it's not too close to edges
+            newX = Math.max(50, Math.min(newX, maxX));
+            newY = Math.max(50, Math.min(newY, maxY));
+
+            noBtn.style.left = newX + 'px';
+            noBtn.style.top = newY + 'px';
+            noBtn.style.transform = `scale(${noButtonScale})`;
+
+            // Update button text occasionally
+            const taunts = ['No', 'Nope', 'Nah', 'Never!', '...', '🙈', ''];
+            if (dodgeCount < taunts.length) {
+                noBtn.textContent = taunts[Math.min(dodgeCount, taunts.length - 1)];
+            }
+        }
+
+        // Victory!
+        function sayYes() {
+            // Epic confetti explosion
+            const duration = 3000;
+            const end = Date.now() + duration;
+
+            const colors = ['#ff69b4', '#ff1493', '#ff6b9d', '#ffc0cb', '#ff0000', '#ff4500'];
+
+            (function frame() {
+                confetti({
+                    particleCount: 7,
+                    angle: 60,
+                    spread: 80,
+                    origin: { x: 0, y: 0.7 },
+                    colors: colors
+                });
+                confetti({
+                    particleCount: 7,
+                    angle: 120,
+                    spread: 80,
+                    origin: { x: 1, y: 0.7 },
+                    colors: colors
+                });
+
+                if (Date.now() < end) {
+                    requestAnimationFrame(frame);
+                }
+            }());
+
+            // Big center burst
+            confetti({
+                particleCount: 200,
+                spread: 100,
+                origin: { y: 0.6 },
+                colors: colors
+            });
+
+            // Transition to victory screen
+            setTimeout(() => {
+                mainContent.classList.add('hidden');
+                noBtn.style.display = 'none';
+                victoryScreen.classList.add('visible');
+            }, 1500);
+        }
+
+        // Initialize
+        noBtn.style.opacity = '0';
+        createHearts();
+        setTimeout(typeWriter, 1000);
+    </script>
+</body>
+</html>
