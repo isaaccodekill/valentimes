@@ -554,7 +554,7 @@
 
     <div class="victory-screen" id="victoryScreen">
         <div class="victory-text">YAAAY! 🎉💕🎉</div>
-        <div class="kiss-message">Now kiss the sender 💋</div>
+        <div class="kiss-message">Now kiss the sender <span id="kissCounter" style="color: #FFD700; font-weight: bold;">1</span> times 💋</div>
     </div>
 
     <script>
@@ -702,7 +702,32 @@
                 cardContent.classList.remove('visible');
                 noBtn.style.display = 'none';
                 victoryScreen.classList.add('visible');
+                startKissCounter();
             }, 1500);
+        }
+
+        // Kiss counter that goes from 1 to 100
+        function startKissCounter() {
+            const counter = document.getElementById('kissCounter');
+            let count = 1;
+
+            const interval = setInterval(() => {
+                count++;
+                counter.textContent = count;
+
+                // Add a little bounce animation on each increment
+                counter.style.transform = 'scale(1.3)';
+                setTimeout(() => {
+                    counter.style.transform = 'scale(1)';
+                }, 100);
+
+                if (count >= 100) {
+                    clearInterval(interval);
+                    // Make it extra special at 100
+                    counter.style.color = '#ff69b4';
+                    counter.style.textShadow = '0 0 20px #FFD700';
+                }
+            }, 150); // ~15 seconds to reach 100
         }
 
         // Initialize
